@@ -2,9 +2,6 @@ import SwiftUI
 import Foundation
 
 // The game's settings. They sit up here, outside the game,
-let lowestNumber: Int = -15
-let highestNumber: Int = 15
-
 let numberRange: Int = 15
 
 // The game itself: what it remembers, what it shows on the screen,
@@ -12,8 +9,8 @@ struct GuessingGameView: View {
     // MARK: - Stored properties
     
     // The number the player is trying to find. The app picks it at random.
-    @State var realSecretNumber: Int = Int.random(in: lowestNumber...highestNumber)
-    @State var imaginarySecretNumber: Int = Int.random(in: lowestNumber...highestNumber)
+    @State var realSecretNumber: Int = Int.random(in: 0 - numberRange...numberRange)
+    @State var imaginarySecretNumber: Int = Int.random(in: 0 - numberRange...numberRange)
 
     // The guess the player is about to make. It starts in the middle.
     @State var realGuess: Int = 0
@@ -26,6 +23,8 @@ struct GuessingGameView: View {
     @State var message: String = "I'm thinking of a complex number with modulus no greater than \(numberRange)."
     @State var messageSymbol: String = "questionmark.circle.fill"
     @State var messageColor: Color = Color.yellow
+    @State var messageBottom: String = "The game will tell you the modulus difference and direction of your guess and the right answer."
+    @State var messageNote: String = "Note: The game is possible in under x moves!"
 
     // Becomes true when the player finds the secret number.
     @State var gameIsOver: Bool = false
@@ -46,12 +45,18 @@ struct GuessingGameView: View {
             Spacer()
 
             // The message card: what the game has to say to you.
-            VStack(spacing: 12) {
+            VStack(spacing: 6) {
                 Image(systemName: messageSymbol)
                     .font(.system(size: 60))
                     .foregroundStyle(messageColor)
                 Text(message)
-                    .font(.title2)
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                Text(messageBottom)
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                Text(messageNote)
+                    .font(.body)
                     .multilineTextAlignment(.center)
             }
             .padding()
@@ -120,7 +125,7 @@ struct GuessingGameView: View {
                 .buttonStyle(.borderedProminent)
             }
 
-            Text("Guesses so far: \(guessCount)") //\(displayedNumber(real: realSecretNumber, imaginary: imaginarySecretNumber)
+            Text("Guesses so far: \(guessCount)")
                 .font(.headline)
                 .foregroundStyle(Color.secondary)
         }
@@ -140,24 +145,52 @@ struct GuessingGameView: View {
     func checkGuess() {
         // One more guess has been made.
         guessCount += 1
-
+        
+        // Checks direction to show correct shape for messageSymbol.
+        var shapeShown : String = "star.circle.fill"
+        
+        if realGuess == realSecretNumber {
+            if imaginaryGuess == imaginarySecretNumber {
+                shapeShown = "star.circle.fill"
+            } else if imaginaryGuess > imaginarySecretNumber {
+                shapeShown = "arrow.down"
+            } else {
+                shapeShown = "arrow.up"
+            }
+        } else if realGuess > realSecretNumber {
+            if imaginaryGuess == imaginarySecretNumber {
+                shapeShown = "arrow.left"
+            } else if imaginaryGuess > imaginarySecretNumber {
+                shapeShown = "arrow.down.left"
+            } else {
+                shapeShown = "arrow.up.left"
+            }
+        } else {
+            if imaginaryGuess == imaginarySecretNumber {
+                shapeShown = "arrow.right"
+            } else if imaginaryGuess > imaginarySecretNumber {
+                shapeShown = "arrow.down.right"
+            } else {
+                shapeShown = "arrow.up.right"
+            }
+        }
+        
+        messageSymbol = shapeShown
+            
+        // Shows the message.
         if realGuess == realSecretNumber && imaginaryGuess == imaginarySecretNumber {
             message = "Yes! \(displayedNumber(real: realSecretNumber, imaginary: imaginarySecretNumber)) is my number."
-            messageSymbol = "star.circle.fill"
             messageColor = Color.green
             gameIsOver = true
         } else {
             if modulus(real: realGuess, imaginary: imaginaryGuess) < modulus(real: realSecretNumber, imaginary: imaginarySecretNumber) {
                 message = "\(displayedNumber(real: realGuess, imaginary: imaginaryGuess)) has smaller modulus than my number. Try again."
-                messageSymbol = "xmark.circle.fill"
                 messageColor = Color.red
             } else if modulus(real: realGuess, imaginary: imaginaryGuess) > modulus(real: realSecretNumber, imaginary: imaginarySecretNumber) {
                 message = "\(displayedNumber(real: realGuess, imaginary: imaginaryGuess)) has larger modulus than my number. Try again."
-                messageSymbol = "xmark.circle.fill"
                 messageColor = Color.red
             } else {
                 message = "\(displayedNumber(real: realGuess, imaginary: imaginaryGuess)) has same modulus than my number. Try again."
-                messageSymbol = "xmark.circle.fill"
                 messageColor = Color.red
             }
         }
@@ -167,14 +200,29 @@ struct GuessingGameView: View {
         realGuess += real
         imaginaryGuess += imaginary
         
-        if realGuess > highestNumber {
-            realGuess = highestNumber
+        // Checks range for output.
+        if realGuess > numberRange {
+            realGuess = numberRange
+        }
+        
+        if realGuess < 0 - numberRange {
+            realGuess = 0 - numberRange
+        }
+        
+        if imaginaryGuess > numberRange {
+            imaginaryGuess = numberRange
+        }
+        
+        if imaginaryGuess < 0 - numberRange {
+            imaginaryGuess = 0 - numberRange
         }
     }
     
+    // Shows the form for display for any number.
     func displayedNumber(real: Int, imaginary: Int) -> String {
         var display: String = ""
         
+        // Checks for coefficients of one.
         if real != 0 && imaginary != 0 {
             if imaginary >= 0 {
                 if imaginary != 1 {
@@ -214,7 +262,7 @@ struct GuessingGameView: View {
 
     // Picks a new secret number and resets everything else.
     func startNewGame() {
-        realSecretNumber = Int.random(in: lowestNumber...highestNumber)
+        realSecretNumber = Int.random(in: 0 - numberRange...numberRange)
         realGuess = 0
         imaginaryGuess = 0
         guessCount = 0
