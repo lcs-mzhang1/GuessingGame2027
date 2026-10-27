@@ -24,7 +24,7 @@ struct GuessingGameView: View {
     @State var messageSymbol: String = "questionmark.circle.fill"
     @State var messageColor: Color = Color.yellow
     @State var messageBottom: String = "The game will tell you the modulus difference and direction of your guess and the right answer."
-    @State var messageNote: String = "Note: The game is possible in under x moves!"
+    @State var messageNote: String = "Note: The game is doable in under 31 guesses!"
 
     // Becomes true when the player finds the secret number.
     @State var gameIsOver: Bool = false
@@ -152,26 +152,35 @@ struct GuessingGameView: View {
         if realGuess == realSecretNumber {
             if imaginaryGuess == imaginarySecretNumber {
                 shapeShown = "star.circle.fill"
+                messageBottom = "On the spot!"
             } else if imaginaryGuess > imaginarySecretNumber {
                 shapeShown = "arrow.down"
+                messageBottom = "Down from your point."
             } else {
                 shapeShown = "arrow.up"
+                messageBottom = "Up from your point."
             }
         } else if realGuess > realSecretNumber {
             if imaginaryGuess == imaginarySecretNumber {
                 shapeShown = "arrow.left"
+                messageBottom = "Left from your point."
             } else if imaginaryGuess > imaginarySecretNumber {
                 shapeShown = "arrow.down.left"
+                messageBottom = "Down-left from your point."
             } else {
                 shapeShown = "arrow.up.left"
+                messageBottom = "Up-left from your point."
             }
         } else {
             if imaginaryGuess == imaginarySecretNumber {
                 shapeShown = "arrow.right"
+                messageBottom = "Right from your point."
             } else if imaginaryGuess > imaginarySecretNumber {
                 shapeShown = "arrow.down.right"
+                messageBottom = "Down-right from your point."
             } else {
                 shapeShown = "arrow.up.right"
+                messageBottom = "Up-right from your point."
             }
         }
         
@@ -269,6 +278,7 @@ struct GuessingGameView: View {
         message = "I'm thinking of a complex number with modulus no greater than \(numberRange)."
         messageSymbol = "questionmark.circle.fill"
         messageColor = Color.yellow
+        messageBottom = "The game will tell you the modulus difference and direction of your guess and the right answer."
         gameIsOver = false
     }
 }
