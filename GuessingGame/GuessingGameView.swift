@@ -20,7 +20,7 @@ struct GuessingGameView: View {
     @State var guessCount: Int = 0
 
     // The message shown to the player, with a symbol and a colour to match it.
-    @State var message: String = "I'm thinking of a complex number with modulus no greater than \(numberRange)."
+    @State var message: String = "I'm thinking of a complex number with modulus no greater than the root of 2·\(numberRange) squared."
     @State var messageSymbol: String = "questionmark.circle.fill"
     @State var messageColor: Color = Color.yellow
     @State var messageBottom: String = "The game will tell you the modulus difference and direction of your guess and the right answer."
@@ -272,10 +272,11 @@ struct GuessingGameView: View {
     // Picks a new secret number and resets everything else.
     func startNewGame() {
         realSecretNumber = Int.random(in: 0 - numberRange...numberRange)
+        imaginarySecretNumber = Int.random(in: 0 - numberRange...numberRange)
         realGuess = 0
         imaginaryGuess = 0
         guessCount = 0
-        message = "I'm thinking of a complex number with modulus no greater than \(numberRange)."
+        message = "I'm thinking of a complex number with modulus no greater than the root of 2·\(numberRange) squared."
         messageSymbol = "questionmark.circle.fill"
         messageColor = Color.yellow
         messageBottom = "The game will tell you the modulus difference and direction of your guess and the right answer."
