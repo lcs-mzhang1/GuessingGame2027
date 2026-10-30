@@ -24,8 +24,7 @@ struct GuessingGameView: View {
     @State var messageSymbol: String = "questionmark.circle.fill"
     @State var messageColor: Color = Color.yellow
     @State var messageBottom: String = "The game will tell you the modulus difference and direction of your guess and the right answer."
-    @State var messageNote: String = "Note: The game is doable in under 31 guesses!"
-
+    
     // Becomes true when the player finds the secret number.
     @State var gameIsOver: Bool = false
 
@@ -55,7 +54,7 @@ struct GuessingGameView: View {
                 Text(messageBottom)
                     .font(.body)
                     .multilineTextAlignment(.center)
-                Text(messageNote)
+                Text("Note: The game is doable in under 5 guesses!")
                     .font(.body)
                     .multilineTextAlignment(.center)
             }
@@ -147,7 +146,7 @@ struct GuessingGameView: View {
         guessCount += 1
         
         // Checks direction to show correct shape for messageSymbol.
-        var shapeShown : String = "star.circle.fill"
+        var shapeShown: String = "star.circle.fill"
         
         if realGuess == realSecretNumber {
             if imaginaryGuess == imaginarySecretNumber {
@@ -231,19 +230,19 @@ struct GuessingGameView: View {
     func displayedNumber(real: Int, imaginary: Int) -> String {
         var display: String = ""
         
-        // Checks for coefficients of one.
+        // Checks for coefficients of zero or one.
         if real != 0 && imaginary != 0 {
             if imaginary >= 0 {
                 if imaginary != 1 {
                     display = "\(real)+\(imaginary)i"
                 } else {
-                    display = "\(realGuess)+i"
+                    display = "\(real)+i"
                 }
             } else {
                 if imaginary != -1 {
-                    display = "\(realGuess)\(imaginaryGuess)i"
+                    display = "\(real)\(imaginary)i"
                 } else {
-                    display = "\(realGuess)-i"
+                    display = "\(real)-i"
                 }
             }
         } else if imaginary == 0 {
@@ -251,7 +250,7 @@ struct GuessingGameView: View {
         } else {
             if imaginary != 1 && imaginary != -1 {
                 display = "\(imaginary)i"
-            } else if imaginaryGuess == 1 {
+            } else if imaginary == 1 {
                 display = "i"
             } else {
                 display = "-i"
@@ -263,8 +262,8 @@ struct GuessingGameView: View {
     
     func modulus(real: Int, imaginary: Int) -> Double {
         // Transforms numbers in double form.
-        let realAsDouble = Double(real)
-        let imaginaryAsDouble = Double(imaginary)
+        let realAsDouble: Double = Double(real)
+        let imaginaryAsDouble: Double = Double(imaginary)
         
         return sqrt(pow(realAsDouble, 2) + pow(imaginaryAsDouble, 2))
     }
